@@ -1,0 +1,342 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Pangolin&display=swap');
+*{
+  margin:0;
+  box-sizing: border-box;
+}
+.main{
+  background: url("./media/background.jpg") repeat;
+  color:rgb(231,231,231);
+  width:100%;
+  font-family: 'Montserrat', comic-sans;
+  padding:1px 0 60px;
+}
+.header{
+  background:rgb(38, 38, 38);
+  width:50%;
+  margin:5% auto;
+  text-align: center;
+  padding:20px 0;
+  border-radius: 50px;
+  font-size: 2.5rem;
+  font-weight: bold;
+  -webkit-box-shadow: 0px 0px 20px 10px rgba(12,184,0,1);
+  -moz-box-shadow: 0px 0px 20px 10px rgba(12,184,0,1);
+  box-shadow: 0px 0px 20px 10px rgba(12,184,0,1);
+}
+.mainContainer{
+  width:80%;
+  display:flex;
+  flex-direction: column;
+  margin:0 auto;
+  margin-top: 30px;
+  background: rgb(38, 38, 38);
+  -webkit-box-shadow: 0px 0px 20px 10px rgba(0,68,255,1);
+  -moz-box-shadow: 0px 0px 20px 10px rgba(0,68,255,1);
+  box-shadow: 0px 0px 20px 10px rgba(0,68,255,1);
+  border-radius: 20px;
+  overflow: hidden;
+}
+.headContainer{
+  width:100%;
+  height:88px;
+  display: flex;
+  flex-direction: row;
+  font-size: 1.2rem;
+  padding:20px 10px;
+  justify-content: space-between;
+  background:  rgb(220, 220, 220);
+  color:  rgb(38, 38, 38);
+  /*border-radius: 0 0 25% 25%;*/
+}
+.filters{
+  width:40%;
+  display:flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgb(180,180,180);
+  border-radius: 25px;
+}
+.headContainer span{
+  font-weight: bold;
+}
+.filters>a{
+  cursor: pointer;
+  border-radius: 20px;
+  padding:5px;
+  user-select: none;
+}
+.filterAdd{
+  border:2px solid blue;
+}
+.filterAdd::before, .filterDel::before{
+  width: 0.8rem;
+  padding-right: 3px;
+  display: inline-block;
+}
+.filterAdd::before{
+  content: url("./media/plus.svg");
+}
+.filterAdd:active{
+  background-color: blue;
+  color:rgb(220, 220, 220);
+}
+.filterDel{
+  border:2px solid red;
+}
+.filterDel::before{
+  content: url("./media/trash.svg");
+}
+.filterDel:active{
+  background-color: red;
+  color: rgb(220, 220, 220);
+}
+.storage{
+  width:30%;
+  display: flex;
+  align-items: center;
+  background-color: rgb(180,180,180);
+  border-radius: 25px;
+  justify-content: space-around;
+}
+.storageInfo{
+  background-color: yellow;
+  border-radius: 20px;
+  padding: 5px;
+}
+.storageClear{
+  text-decoration: none;
+  outline: none;
+  cursor: pointer;
+  padding: 5px;
+  user-select: none;
+  border:2px solid rgb(220,40,40);
+  border-radius: 20px;
+}
+.storageClear:active{
+  background-color: rgb(220,40,40);
+  color: rgb(220, 220, 220);
+}
+.search{
+  width:20%;
+  border:2px solid rgb(10,10,10);
+  border-radius: 25px;
+  overflow: hidden;
+  position: relative;
+}
+.search > input{
+  width:100%;
+  height:100%;
+  padding-left: 10px;
+  outline:none;
+  text-decoration: none;
+  border:none;
+}
+.search>button{
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 100%;
+  display:block;
+  position: absolute;
+  top:2px;
+  right:2px;
+  cursor: pointer;
+  background:url("./media/search.svg") no-repeat center;
+  background-size: 60%;
+}
+.mediaContainer{
+  width:100%;
+  padding:50px 0 20px 40px;
+  display: flex;
+  flex-direction: column;
+  margin:0 auto;
+  justify-content: space-between;
+}
+.mediaContainer>span{
+  margin: 0 auto;
+  font-size: 2rem;
+  font-weight: bold;
+}
+#imagesContainer{
+  width:90%;
+  padding:50px 20px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  margin:0 auto;
+  justify-content: space-between;
+}
+#collectionsContainer{
+  width:90%;
+  padding:50px 20px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  margin:0 auto;
+  justify-content: space-between;
+}
+.section{
+  width:90%;
+  height: 30px;
+  background-color: rgba(0,68,255,0.8);
+  border-radius: 25px;
+  margin:0 auto 30px;
+}
+.imageBlock{
+  height:350px;
+  width: 250px;
+  margin-bottom: 30px;
+  background-color: rgb(20,20,20);
+  border-radius: 25px;
+  overflow: hidden;
+  position: relative;
+}
+
+.collectBlock{
+  width:100%;
+  margin:0 auto;
+  height:500px;
+}
+.imageSlider{
+  position: relative;
+  overflow: hidden;
+  margin:0 auto;
+  max-height: 80%;
+}
+.imageWrapper{
+  display:flex;
+  transition: .4s;
+  max-height: 50vh;
+  overflow: hidden;
+}
+.imageWrapper img{
+  flex:0 0 50%;
+  display: block;
+  width:100%;
+  height:auto;
+  margin:15px auto;
+  text-align: center;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.buttonCarousel{
+  outline:none;
+  text-decoration: none;
+  font-weight: bolder;
+  font-size: 4.5rem;
+  position: absolute;
+  top: 47.75%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15%;
+  height: 100%;
+  color: #fff;
+  text-align: center;
+  opacity: 0.5;
+  transform: translateY(-50%);
+}
+.leftButton{
+  left:0;
+}
+.rightButton{
+  right:0;
+}
+.carouselIndicators{
+  position: absolute;
+  right: 0;
+  bottom: 3%;
+  left: 0;
+  z-index: 15;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding-left: 0;
+  margin-right: 15%;
+  margin-left: 15%;
+  list-style: none;
+}
+.carouselIndicators li{
+  box-sizing: content-box;
+  -ms-flex: 0 1 auto;
+  flex: 0 1 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 3px;
+  margin-left: 3px;
+  text-indent: -999px;
+  cursor: pointer;
+  background-color: #fff;
+  background-clip: padding-box;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  opacity: .5;
+  transition: opacity .6s ease;
+}
+.panel{
+  display:none;
+  width:100%;
+  background-color: rgb(10,10,10);
+  color:rgb(220,220,220);
+  opacity: .8;
+  position: absolute;
+  font-size: 2rem;
+  text-align: center;
+  padding: 10px;
+}
+.imageName{
+  top:0;
+}
+.imageSettings{
+  bottom:0;
+}
+.panelEdit{
+
+}
+.panelDownload{
+
+}
+.panelDelete{
+
+}
+.collectAdd{
+  background-color: rgb(220, 220, 220);
+  height:200px;
+  margin:0 auto 20px;
+  width:60%;
+  border-radius: 25px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color:rgb(38,38,38);
+  cursor: pointer;
+}
+#imageAdd{
+  background-color: rgb(220, 220, 220);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color:rgb(38,38,38);
+  cursor:pointer;
+}
+#addImage{
+  width: 0;
+  height:0;
+  text-decoration: none;
+  outline: none;
+}
+.addIco{
+  background: url("./media/plus-circle.svg") no-repeat;
+  width:175px;
+  height:175px;
+}

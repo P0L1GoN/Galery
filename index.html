@@ -17,7 +17,7 @@
       <div class="headContainer">
         <div class="storage">
           <span>Хранилище:</span>
-          <div class="storageInfo">22/100</div>
+          <div class="storageInfo"></div>
           <a class="storageClear">Очистить</a>
         </div>
         <div class="search">
@@ -52,16 +52,19 @@
             <input type="file" id="addImage" name="addImage" onchange="newImage()"
                    accept=".jpg, .jpeg, .png">
           </div>
-          <div class="imageBlock"><div class="panel imageName">Прив</div><div class="panel imageSettings">Хай</div></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
-          <div class="imageBlock"></div>
+          <div id="newImageForm">
+            <div id="newImageInputs">
+              <input type="text" id="imageName" placeholder="Имя">
+              <input type="text" id="imageMime" placeholder="MIME-тип">
+              <input type="text" id="imageSize" placeholder="Размер">
+              <input type="text" id="imageHW" placeholder="Высота/Ширина">
+              <textarea id="imageDescription" placeholder="Описание"></textarea>
+            </div>
+            <div id="imagePreviewAdd">
+              <img id="imagePreview" alt="">
+              <div id="imageAddButton">Добавить</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

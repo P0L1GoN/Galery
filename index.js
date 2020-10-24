@@ -5,7 +5,10 @@ let collectTrans;
 let imageAdd=document.getElementById('imageAdd')
 let inputButt = document.getElementById('addImage')
 let buttonClear=document.querySelector('.storageClear')
-let collectAdd=document.querySelector('.collectAdd')
+//let collectAdd=document.querySelector('.collectAdd')
+let bgMask=document.getElementById('backgroundMask')
+let inputForm=document.getElementById('newImageForm')
+let inputDescription=document.getElementById('imageDescription')
 buttonClear.onclick=function(){
     let transactions=db.transaction(['Images','Collections'],'readwrite')
     let imageDelete=transactions.objectStore('Images')
@@ -17,23 +20,16 @@ buttonClear.onclick=function(){
 imageAdd.onclick=function() {
     inputButt.click()
 }
-collectAdd.onclick=function (){
-
-}
+let inputName=document.getElementById('imageName')
+let inputMime=document.getElementById('imageMime')
+let inputSize=document.getElementById('imageSize')
+let inputHW=document.getElementById('imageHW')
+let imagePreview=document.getElementById('imagePreview')
 newImage=function(){
     let fileReader = new FileReader()
     fileReader.onloadend = function (){
-        let inputForm=document.getElementById('newImageForm')
         inputForm.setAttribute('style','display:flex')
-        let inputName=document.getElementById('imageName')
-        let inputMime=document.getElementById('imageMime')
-        let inputSize=document.getElementById('imageSize')
-        let inputHW=document.getElementById('imageHW')
-        let inputDescription=document.getElementById('imageDescription')
-        let imagePreview=document.getElementById('imagePreview')
         imagePreview.setAttribute('src',fileReader.result)
-        let imageName
-        let imageMime
         if(inputButt.files[0].name.includes('.') ){
             for(let i=0;i<inputButt.files[0].name.length;i++){
                 if(inputButt.files[0].name[i]=='.') {
@@ -49,76 +45,109 @@ newImage=function(){
         }
         img.src=fileReader.result
         inputName.setAttribute('value',imageName)
+        console.log(imageName)
         inputMime.setAttribute('value',imageMime)
-        inputSize.setAttribute('value',(inputButt.files[0].size/1000).toString()+'КБ')
+        inputSize.setAttribute('value',(inputButt.files[0].size/1024).toFixed(2)+'КБ')
         let buttonAdd=document.getElementById('imageAddButton')
-        buttonAdd.onclick=function(){
-            AddToDB({
-                name: inputName.value,
-                file:fileReader.result,
-                mime:inputMime.value,
-                size:inputSize.value,
-                hw:inputHW.value,
-                description:inputDescription.value
-            })
-            inputDescription.value=""
-            inputForm.setAttribute('style','')
-        }
+        let addForm=document.getElementById('newImageForm')
+        bgMask.setAttribute('style','display:block')
+        addForm.setAttribute('style','display:flex')
+        buttonAdd.innerHTML='Добавить'
+        buttonAdd.setAttribute('onclick',`buttonAddClick()`)
     }
     if(inputButt.files[0])
         fileReader.readAsDataURL(inputButt.files[0])
 }
+buttonAddClick=(id=false)=>{
+    if(!id){
+        AddToDB({
+            name: inputName.value,
+            file:imagePreview.src,
+            mime:inputMime.value,
+            size:inputSize.value,
+            hw:inputHW.value,
+            description:inputDescription.value
+        })
+    }
+    else{
+        let transaction=db.transaction('Images','readwrite')
+        let imageTransAdd=transaction.objectStore('Images')
+        imageTransAdd.openCursor().onsuccess=event=>{
+            let cursor=event.target.result
+            if(cursor!=null){
+                if(cursor.key==id){
+                    imageTransAdd.put({
+                        id:id,
+                        name: inputName.value,
+                        file:imagePreview.src,
+                        mime:inputMime.value,
+                        size:inputSize.value,
+                        hw:inputHW.value,
+                        description:inputDescription.value
+                    })
+                }
+                else
+                    cursor.continue();
+            }
+        }
+        transaction.oncomplete=function(){
+            location.reload()
+        }
+    }
+    inputForm.setAttribute('style','')
+    bgMask.setAttribute('style','')
 
+}
+let backButton=document.getElementById('imageBackButton')
+backButton.onclick=function(){
+    inputDescription.value=""
+    inputForm.setAttribute('style','')
+    bgMask.setAttribute('style','')
+}
 openRequest.onupgradeneeded=function(event) {
-    console.log("Upgrading...");
+    console.log("Upgrading...")
     db=event.target.result
-    let collectStore=db.createObjectStore('Collections',{autoIncrement:'true'});
-    let imageStore=db.createObjectStore('Images',{autoIncrement:'true'});
-};
+    //let collectStore=db.createObjectStore('Collections',{keyPath:"id",autoIncrement:true})
+    let imageStore=db.createObjectStore('Images',{keyPath:"id",autoIncrement:true})
+}
 openRequest.onsuccess=event=>{
     console.log("Success")
     db=event.target.result
     let transactions=db.transaction(['Images','Collections'],'readwrite')
     imageTrans=transactions.objectStore('Images')
     collectTrans=transactions.objectStore('Collections')
-    let imageRender=imageTrans.openCursor()
-    let imageCount=0;
-    imageRender.onsuccess=event=> {
+    let imageRender=imageTrans.openCursor().onsuccess=event=> {
         let cursor=event.target.result
         if(cursor != null){
-            addImage(cursor.value,cursor.key)
+            addImage(cursor.value)
             cursor.continue()
-            imageCount++
         }
+        else
+            updateStorageInfo()
     }
-    let collectRender=collectTrans.openCursor()
+    /*let collectRender=collectTrans.openCursor()
     collectRender.onsuccess=event=> {
         let cursor = event.target.result
         if (cursor != null) {
             addCollect(cursor.value,cursor.key)
             cursor.continue()
         }
-    }
-    addCollect({
-        imageList:[
-            'https://yummyanime.club/img/posters/1567878394.jpg',
-            'https://steamcdn-a.akamaihd.net/steam/apps/1298590/capsule_616x353.jpg?t=1589198152',
-            'https://yummyanime.club/img/posters/1567878394.jpg'
-        ]
-    },0)
-    let storageInfo=document.querySelector('.storageInfo')
-    storageInfo.append(imageCount.toString())
+    }*/
 }
-AddToDB=(image,collect)=>{
+AddToDB=(image,collect=false)=>{
     if(image){
         let transaction=db.transaction('Images','readwrite')
-        imageTransAdd=transaction.objectStore('Images')
-        imageTransAdd.add(image)
-        let imgId=imageTransAdd.count()
-        imgId.onsuccess=event=>{
-            addImage(image,event.target.result)
+        let imageTransAdd=transaction.objectStore('Images')
+        imageTransAdd.add(image).onsuccess=event=>{
+            console.log(event.target.result)
+            imageTransAdd.openCursor().onsuccess=e=>{
+                let cursor=e.target.result
+                if(cursor.key == event.target.result)
+                    addImage(cursor.value)
+                else
+                    cursor.continue()
+            }
         }
-
     }
     else if(collect){
         let transaction=db.transaction('Collections','readwrite')
@@ -127,7 +156,7 @@ AddToDB=(image,collect)=>{
         addCollect(collect)
     }
 }
-addCollect=(collect,id)=>{
+/*addCollect=(collect,id)=>{
     let colCon=document.getElementById('collectionsContainer')
     let newCol=document.createElement("div")
     newCol.classList.add("collectBlock")
@@ -177,8 +206,9 @@ addCollect=(collect,id)=>{
     colSlider.appendChild(carButR)
     newCol.appendChild(colSlider)
     colCon.append(newCol)
-}
-addImage=(image,id)=>{
+    updateStorageInfo()
+}*/
+addImage=(image)=>{
     if(!image.name){
         console.error("Ошибка в инициализации картинки")
         return
@@ -186,7 +216,7 @@ addImage=(image,id)=>{
     let imCon=document.getElementById('imagesContainer')
     let newImg=document.createElement("div")
     newImg.classList.add("imageBlock")
-    newImg.id=id
+    newImg.id=image.id
     let imgSrc=document.createElement("img")
     if(image.file)
         imgSrc.src=image.file
@@ -199,22 +229,63 @@ addImage=(image,id)=>{
     let imageInfo=document.createElement('div')
     imageInfo.classList.add('imageInfo')
     imageInfo.onclick=function(){
-
+        bgMask.setAttribute('style','display:block')
+        let infoForm=document.getElementById('imageInfoBlock')
+        infoForm.setAttribute('style','display:flex')
+        infoForm.innerHTML=`
+            <div id="imageBlock">
+                <div id="imageNameInfo">${image.name}</div>
+                <img id="imagePresentation" src="${image.file}">
+            </div>
+            
+            <div id="infoBlock">
+                <span>${image.description}</span>
+                <span>Размер:</span> ${image.hw}
+                <span>Вес:</span> ${image.size}
+                <span>MIME-тип:</span> ${image.mime}
+            </div>
+            <div id="closeInfoForm"></div>
+        `
+        let buttonClose=document.getElementById('closeInfoForm')
+        buttonClose.onclick=function(){
+            infoForm.setAttribute('style','')
+            bgMask.setAttribute('style','')
+        }
+    }
+    imgSrc.onclick=function(){
+        imageInfo.click()
     }
     panelName.appendChild(imageInfo)
     let panelEdit=document.createElement('div')
     panelEdit.classList.add('panelEdit')
+    panelEdit.onclick=function(){
+        let buttonAdd=document.getElementById('imageAddButton')
+        inputForm.setAttribute('style','display:flex')
+        bgMask.setAttribute('style','display:block')
+        inputName.setAttribute('value',image.name)
+        inputMime.setAttribute('value',image.mime)
+        inputHW.setAttribute('value',image.hw)
+        inputSize.setAttribute('value',image.size)
+        imagePreview.src=image.file
+        inputDescription.value=image.description
+        buttonAdd.innerHTML='Изменить'
+        buttonAdd.setAttribute('onclick',`buttonAddClick(${image.id})`)
+    }
     let panelDownload=document.createElement('a')
     panelDownload.classList.add('panelDownload')
-    panelDownload.href=image.file
+    panelDownload.onclick=function(){
+        let downloadA=document.createElement('a')
+        downloadA.setAttribute('href',image.file)
+        downloadA.setAttribute('download',image.name+image.mime)
+        downloadA.click()
+    }
     panelDownload.setAttribute('download',imageName)
     let panelDelete=document.createElement('div')
     panelDelete.classList.add('panelDelete')
     panelDelete.onclick=function(){
         let transaction=db.transaction('Images','readwrite')
-        imageTransaction=transaction.objectStore('Images')
-        console.log(id)
-        imageTransaction.delete(id)
+        let imageTransaction=transaction.objectStore('Images')
+        imageTransaction.delete(image.id)
         newImg.setAttribute('style','display:none')
     }
     let panelSettings=document.createElement('div')
@@ -234,6 +305,18 @@ addImage=(image,id)=>{
         panelSettings.setAttribute('style','visibility:hidden')
     }
     imCon.appendChild(newImg)
+    updateStorageInfo()
+}
+updateStorageInfo=function(){
+    let storageInfo=document.querySelector('.storageInfo')
+    navigator.storage.estimate().then(function(estimate){
+        let storagePercent=estimate.usage/estimate.quota
+        storageInfo.innerHTML=storagePercent.toFixed(2)+'%'
+        if(storagePercent>50)
+            storageInfo.setAttribute('style','background-color:yellow')
+        else if(storagePercent>80)
+            storageInfo.setAttribute('style','background-color:red')
+    })
 }
 openRequest.onerror=function(){
     console.log("Here is ERROR");

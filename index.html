@@ -9,7 +9,9 @@
   <title>Галерея</title>
 </head>
 <body>
+<div id="backgroundMask"></div>
   <div class="main">
+    <div id="imageInfoBlock"></div>
     <div class="header">
       Персональная Галерея
     </div>
@@ -26,24 +28,6 @@
         </div>
       </div>
       <div class="mediaContainer">
-        <span>Коллекции</span>
-        <div id="collectionsContainer">
-          <div class="collectAdd">
-            <div class="addIco"></div>
-            <span>Добавить коллекцию</span>
-          </div>
-          <div class="collectBlock">
-            <div class="imageSlider">
-              <div class="imageWrapper">
-                <img src="media/images/tree.jpg">
-                <img src="media/images/sea.jpg">
-              </div>
-              <a class="buttonCarousel leftButton">‹</a>
-              <a class="buttonCarousel rightButton">›</a>
-            </div>
-          </div>
-        </div>
-        <div class="section"></div>
         <span>Картинки</span>
         <div id="imagesContainer">
           <div class="imageBlock" id="imageAdd">
@@ -62,7 +46,10 @@
             </div>
             <div id="imagePreviewAdd">
               <img id="imagePreview" alt="">
-              <div id="imageAddButton">Добавить</div>
+              <div id="imageAddBackButton">
+                <div id="imageAddButton">Добавить</div>
+                <div id="imageBackButton">Отмена</div>
+              </div>
             </div>
           </div>
         </div>

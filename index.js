@@ -1,7 +1,5 @@
 let openRequest=indexedDB.open("DataBase",1);
 let db;
-let imageTrans;
-let collectTrans;
 let imageAdd=document.getElementById('imageAdd')
 let inputButt = document.getElementById('addImage')
 let buttonClear=document.querySelector('.storageClear')
@@ -30,15 +28,11 @@ newImage=function(){
     fileReader.onloadend = function (){
         inputForm.setAttribute('style','display:flex')
         imagePreview.setAttribute('src',fileReader.result)
-        if(inputButt.files[0].name.includes('.') ){
-            for(let i=0;i<inputButt.files[0].name.length;i++){
-                if(inputButt.files[0].name[i]=='.') {
-                    imageMime=inputButt.files[0].name.slice(i)
-                    imageName=inputButt.files[0].name.slice(0,i)
-                    break
-                }
-            }
+        for(let i=0;i<inputButt.files[0].type.length;i++){
+            if(inputButt.files[0].type[i]=='/')
+                imageMime=inputButt.files[0].type.slice(i+1)
         }
+        imageName=inputButt.files[0].name.slice(0,-4)
         let img=new Image()
         img.onload=function(){
             inputHW.setAttribute('value',img.naturalWidth.toString()+'x'+img.naturalHeight.toString())
@@ -58,7 +52,7 @@ newImage=function(){
     if(inputButt.files[0])
         fileReader.readAsDataURL(inputButt.files[0])
 }
-buttonAddClick=(id=false)=>{
+buttonAddClick=(id=false)=>{//Функция кнопки добавления и изменения информации картинки
     if(!id){
         AddToDB({
             name: inputName.value,
@@ -114,8 +108,7 @@ openRequest.onsuccess=event=>{
     console.log("Success")
     db=event.target.result
     let transactions=db.transaction(['Images','Collections'],'readwrite')
-    imageTrans=transactions.objectStore('Images')
-    collectTrans=transactions.objectStore('Collections')
+    let imageTrans=transactions.objectStore('Images')
     let imageRender=imageTrans.openCursor().onsuccess=event=> {
         let cursor=event.target.result
         if(cursor != null){
@@ -149,12 +142,12 @@ AddToDB=(image,collect=false)=>{
             }
         }
     }
-    else if(collect){
+   /* else if(collect){
         let transaction=db.transaction('Collections','readwrite')
         collectTransAdd=transaction.objectStore('Collections')
         collectTransAdd.add(collect)
         addCollect(collect)
-    }
+    }*/
 }
 /*addCollect=(collect,id)=>{
     let colCon=document.getElementById('collectionsContainer')
@@ -208,7 +201,7 @@ AddToDB=(image,collect=false)=>{
     colCon.append(newCol)
     updateStorageInfo()
 }*/
-addImage=(image)=>{
+addImage=(image)=>{//функция добавления изображения на экран
     if(!image.name){
         console.error("Ошибка в инициализации картинки")
         return
@@ -276,7 +269,7 @@ addImage=(image)=>{
     panelDownload.onclick=function(){
         let downloadA=document.createElement('a')
         downloadA.setAttribute('href',image.file)
-        downloadA.setAttribute('download',image.name+image.mime)
+        downloadA.setAttribute('download',image.name)
         downloadA.click()
     }
     panelDownload.setAttribute('download',imageName)
@@ -307,7 +300,7 @@ addImage=(image)=>{
     imCon.appendChild(newImg)
     updateStorageInfo()
 }
-updateStorageInfo=function(){
+updateStorageInfo=function(){//Функция обновления значения заполненности хранилища
     let storageInfo=document.querySelector('.storageInfo')
     navigator.storage.estimate().then(function(estimate){
         let storagePercent=estimate.usage/estimate.quota
@@ -317,6 +310,31 @@ updateStorageInfo=function(){
         else if(storagePercent>80)
             storageInfo.setAttribute('style','background-color:red')
     })
+}
+let searchInput=document.getElementById('inputSearch')
+searchInput.oninput=function(){
+    let transaction=db.transaction('Images','readonly')
+    let imageBlocks=document.querySelectorAll('.imageBlock')
+    let imageTrans=transaction.objectStore('Images')
+    imageTrans.openCursor().onsuccess=event=>{
+        let cursor=event.target.result
+        if(cursor!=null){
+            if(!cursor.value.name.toLowerCase().includes(searchInput.value.toLowerCase())){//Если название картинки НЕ имеет в себе значение инпута
+                imageBlocks.forEach(el=>{
+                    if(cursor.key==el.id)
+                        el.setAttribute('style','display:none')
+                })
+                cursor.continue()
+            }
+            else{
+                imageBlocks.forEach(el=>{
+                    if(cursor.key==el.id)
+                        el.setAttribute('style','')
+                })
+                cursor.continue();
+            }
+        }
+    }
 }
 openRequest.onerror=function(){
     console.log("Here is ERROR");

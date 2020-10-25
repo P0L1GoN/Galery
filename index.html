@@ -23,8 +23,8 @@
           <a class="storageClear">Очистить</a>
         </div>
         <div class="search">
-          <input name="search" placeholder="Поиск">
-          <button type="submit"></button>
+          <input id="inputSearch" name="search" placeholder="Поиск по имени картинки">
+          <button id="buttonSearch" type="submit"></button>
         </div>
       </div>
       <div class="mediaContainer">
@@ -34,7 +34,7 @@
             <div class="addIco"></div>
             <span>Добавить изображение</span>
             <input type="file" id="addImage" name="addImage" onchange="newImage()"
-                   accept=".jpg, .jpeg, .png">
+                   accept="image/*">
           </div>
           <div id="newImageForm">
             <div id="newImageInputs">

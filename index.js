@@ -3,7 +3,6 @@ let db;
 let imageAdd=document.getElementById('imageAdd')
 let inputButt = document.getElementById('addImage')
 let buttonClear=document.querySelector('.storageClear')
-//let collectAdd=document.querySelector('.collectAdd')
 let bgMask=document.getElementById('backgroundMask')
 let inputForm=document.getElementById('newImageForm')
 let inputDescription=document.getElementById('imageDescription')
@@ -101,13 +100,12 @@ backButton.onclick=function(){
 openRequest.onupgradeneeded=function(event) {
     console.log("Upgrading...")
     db=event.target.result
-    //let collectStore=db.createObjectStore('Collections',{keyPath:"id",autoIncrement:true})
     let imageStore=db.createObjectStore('Images',{keyPath:"id",autoIncrement:true})
 }
 openRequest.onsuccess=event=>{
     console.log("Success")
     db=event.target.result
-    let transactions=db.transaction(['Images','Collections'],'readwrite')
+    let transactions=db.transaction('Images','readwrite')
     let imageTrans=transactions.objectStore('Images')
     let imageRender=imageTrans.openCursor().onsuccess=event=> {
         let cursor=event.target.result
@@ -118,16 +116,8 @@ openRequest.onsuccess=event=>{
         else
             updateStorageInfo()
     }
-    /*let collectRender=collectTrans.openCursor()
-    collectRender.onsuccess=event=> {
-        let cursor = event.target.result
-        if (cursor != null) {
-            addCollect(cursor.value,cursor.key)
-            cursor.continue()
-        }
-    }*/
 }
-AddToDB=(image,collect=false)=>{
+AddToDB=(image)=>{
     if(image){
         let transaction=db.transaction('Images','readwrite')
         let imageTransAdd=transaction.objectStore('Images')
@@ -142,65 +132,7 @@ AddToDB=(image,collect=false)=>{
             }
         }
     }
-   /* else if(collect){
-        let transaction=db.transaction('Collections','readwrite')
-        collectTransAdd=transaction.objectStore('Collections')
-        collectTransAdd.add(collect)
-        addCollect(collect)
-    }*/
 }
-/*addCollect=(collect,id)=>{
-    let colCon=document.getElementById('collectionsContainer')
-    let newCol=document.createElement("div")
-    newCol.classList.add("collectBlock")
-    newCol.id=id
-    let colSlider=document.createElement("div")
-    colSlider.classList.add('imageSlider')
-    let colWrapper=document.createElement('div')
-    colWrapper.classList.add('imageWrapper')
-    let carButL=document.createElement('a')
-    carButL.className='buttonCarousel leftButton'
-    carButL.append('‹')
-    let carButR=document.createElement('a')
-    carButR.className='buttonCarousel rightButton'
-    carButR.append('›')
-    collect.imageList.forEach(image=>{
-        let imgSrc=document.createElement("img")
-        imgSrc.src=image
-        colWrapper.appendChild(imgSrc)
-    })
-    let transform=0;
-    let countImg= collect.imageList.length-1
-    console.log(countImg)
-    let controlButtons=function(){
-        if(transform==0)
-            carButL.setAttribute('style','display:none')
-        else
-            carButL.setAttribute('style','')
-        if(countImg==0)
-            carButR.setAttribute('style','display:none')
-        else
-            carButR.setAttribute('style','')
-    }
-    controlButtons()
-    carButL.onclick=function(){
-        transform=(transform+1) % countImg
-        colWrapper.setAttribute('style','transform:translateX('+(transform*50).toString()+'%)')
-        controlButtons()
-    }
-    carButR.onclick=function(){
-        transform=(transform-1) % countImg
-        colWrapper.setAttribute('style','transform:translateX('+(transform*50).toString()+'%)')
-        controlButtons()
-    }
-
-    colSlider.appendChild(colWrapper)
-    colSlider.appendChild(carButL)
-    colSlider.appendChild(carButR)
-    newCol.appendChild(colSlider)
-    colCon.append(newCol)
-    updateStorageInfo()
-}*/
 addImage=(image)=>{//функция добавления изображения на экран
     if(!image.name){
         console.error("Ошибка в инициализации картинки")
